@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>DOM查询</title>
+        <link rel="stylesheet" href="mytool.css" type="text/css">
+    </head>
+    <body>
+        <div id="container">
+            <div id="col1" class="col-4">
+                <div class="hello"><button id="btn1">getElementById</button></div>
+                <div class="hello"><button id="btn2">getElementsByName</button></div>
+                <div class="hello"><button id="btn3">getElementsByTagName</button></div>
+                <div class="hello"><button id="btn4">getElementsByClassName</button></div>
+                <div class="hello"><button id="btn5">querySelector</button></div>
+                <div class="hello"><button id="btn6">querySelectorAll</button></div>
+            </div>
+            <div id="col5" class="col-6">
+                <ul id="ul2">
+                    <li id="li1" class="list">这是一个 id 为 one 的选项</li>
+                    <li id="li2" class="list" name='list two' >这是一个 id 为 two 的选项</li>
+                    <li id="li3" class="list">这是一个 id 为 three 的选项</li>
+                    <li id="li4" class="list" name='list two' >这是一个 id 为 four的选项</li>
+                    <li id="li5" class="list">这是一个 id 为 five的选项</li>
+                </ul>
+            </div>
+
+        </div>
+    </body>
+    <script>
+
+        //  通过getElementById（）方法为button 绑定事件
+        var btn1 = document.getElementById('btn1');
+        btn1.onclick = function () {
+            var list=document.getElementById('li1');
+            list.className = 'col6'
+        };
+
+        // 通过getElementsByName（）方法为button 绑定事件
+        var btn2 = document.getElementById('btn2');
+        btn2.onclick=function () {
+            var list=document.getElementsByName('list two');
+            for (var i=0;i<list.length;i++){
+                list[i].className='col6'
+            }
+        };
+        // 通过getElementsByTagName（）方法为button 绑定事件
+        var btn3=document.getElementById('btn3');
+        btn3.onclick=function () {
+            var list=document.getElementsByTagName('li');
+            for (var i=0;i<list.length;i++){
+                list[i].className='col6'
+            }
+        };
+
+        // 通过getElementsByClassName（）方法为button 绑定事件
+        var btn4=document.getElementById('btn4');
+        btn4.onclick=function () {
+            var list=document.getElementsByClassName('list');
+            for (var i=0;i<list.length;i++){
+                list[i].className='col6'
+            }
+        };
+
+        //通过querySelector（）方法
+        var  btn5 = document.getElementById('btn5');
+        btn5.onclick =function () {
+            var list=document.querySelector('li')
+            list.className='col6'
+            console.log(list)
+        };
+
+
+        var btn6=document.getElementById('btn6');
+        btn6.onclick=function () {
+            var list =document.querySelectorAll('li')
+            for(var i=0;i<list.length;i++){
+                list[i].className='col6'
+            }
+            console.log(list)
+        }
