@@ -1,0 +1,27 @@
+//下面代码实现的效果是左右移动下拉列表的选项时，出现length和i同时变化的情况
+
+//第一种通过添加语句 i-- 的方法，
+
+for(var i=0;i<opts.length;i++){
+			    if (opts[i].selected){
+                    var second=document.getElementById('second');
+                    second.appendChild(opts[i]);
+                    i--
+				}；
+       
+       
+// 第二种通过i-- 倒着循环的方式
+for(var i=opts.length-1;i>=0;i--){
+          if (opts[i].selected){
+                    var second=document.getElementById('second');
+                    second.appendChild(opts[i]);
+                }
+			}；
+      
+// 第三种 通过设置变量的方式，即使length改变，但是赋给的变量初始值不变，保证能够循环length次
+for(var i=0;len=opts.length;i<len;i++{
+          if (opts[i].selected){
+                    var second=document.getElementById('second');
+                    second.appendChild(opts[i]);
+                }
+			}；
