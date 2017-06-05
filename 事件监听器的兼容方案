@@ -1,0 +1,20 @@
+/*
+addEventListener()方法 - 其他浏览器 （Chrome，Firefox，IE9/10/11）;
+attachEvent() - IE 8/7/6
+   *解决方案 - 为其定义一个封装函数
+*/
+
+
+function bind(elem,eventName,functionName){
+        if（elem.addEventListener）{
+            elem.addEventListenr(eventName,functionName)
+        }else{
+        
+            elem.attachEvent('on'+eventName,functionName)
+        
+        }   
+}
+
+bind(btn,'click',function(){
+    console.loe('hahahahhaha')
+})
