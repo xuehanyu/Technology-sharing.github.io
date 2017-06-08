@@ -1,0 +1,211 @@
+事件监听器的兼容问题：
+    问题：addEventListener（）方法  -  其他浏览器
+          attachEvent（）方法  -  IE浏览器
+    解决方案 ：
+      一、
+        if（element.addEventListener）{
+            // 说明是其他浏览器
+            element.addEventListener（event,function，boolean）
+        }else{
+            // 说明IE浏览器
+            element.attachEvent（event,function）
+        }
+
+
+      二、定义一个封装函数
+        function bind（elem，eventName,functionName）{
+            if（elem.addEventListener）{
+                // 说明是其他浏览器
+            element.addEventListener（eventName,functionName）
+            }else{
+                // 说明IE浏览器
+            element.attachEvent（'on'+eventName,functionName）
+            }
+        }
+        bind（btn ,'click',function(){
+            console.log('你好')
+        }
+
+
+
+
+
+ 事件对象的兼容问题：
+    问题：
+        事件对象 - event - 其他浏览器
+        事件对象 - window.event  - IE8 官方规范的事件对象
+    解决方案：
+        var btn=document.getElementById('btn');
+        function bind(elem,eventName,functionName) {
+            if(elem.addEventListener){
+                elem.addEventListener(eventName,functionName)
+            }else{
+                elem.attachEvent('on'+eventName,functionName)
+            }
+        }
+        bind(btn,'click',function (event) {
+			var event=event||window.event   //  解决事件对象的兼容问题
+			console.log(event)
+        })
+        
+        
+        
+        
+ 事件的目标元素兼容问题：
+    问题:
+        event.target - 其他浏览器，IE8版本不支持，返回值为undefined；
+        event.srcElement - IE浏览器，其他版本的也支持
+    解决方案：
+        function bind（elem,eventName,functionName）{
+            if（elem.addEventListener）{
+                // 说明其他浏览器
+                elem.addEventListener(eventName,functionName)
+            }else{
+                // 说明IE浏览器
+                elem.attach（'on'+eventName,functionName）
+            }
+        }
+        bind（btn,'click',function(event){
+            var event= event.target  || event.srcElement
+            console.log(event)
+        }
+        
+       
+        
+解决事件周期中阻止冒泡行为的兼容问题
+    TODO 阻止冒泡事件
+    TODO 问题 - event.stopPropagation() 方法IE 浏览器不支持
+    TODO 解决方案 - event.cancelBubble=true; IE支持
+        var d1=document.getElementById('d1');
+        var d2=document.getElementById('d2');
+        var d3=document.getElementById('d3');
+    // 定义一个封装函数
+	function bind(elem,eventName,funtionName) {
+		if (elem.addEventListener){
+		// 说明其他浏览器
+		   elem.addEventListener(eventName,funtionName)
+		}else {
+		   elem.attachEvent('on'+eventName,funtionName)
+		}
+       	}
+        bind(d1,'click',function () {
+			alert('1');
+        });
+        bind(d2,'click',function () {
+            alert('2');
+        });
+        bind(d3,'click',function (event) {
+            var event=event||window.event;
+            if (event.stopPropagation){
+                event.stopPropagation();   // 其他浏览器
+            }else {
+                event.cancelBubble=true;   // IE8版本支持，阻止冒泡的方法
+			}
+            alert('3');
+        });
+        
+        
+        
+        
+阻止默认行为的兼容问题
+    问题：
+        event.preventDefault（） - 其他浏览器 ，其前后代码均可执行
+        event.returnValue = false  ; - IE8浏览器，其他浏览器也支持
+        return false   - IE8浏览器支持，其他浏览器不支持，其他代码不可执行
+    解决方案 
+      第一种方案：
+        var a=document.getElementById('a');
+        function bind(elem,eventName,functionName) {
+			if (elem.addEventListener){
+			    // 其他浏览器
+				elem.addEventListener(eventName,functionName)
+			}else {
+                //IE 浏览器
+                elem.attachEvent('on'+eventName,functionName)
+			}
+        }
+		bind(a,'click',function (event) {
+		    if (event.preventDefault){
+                event.preventDefault();
+			}else{
+                event.returnValue=false ;
+			}
+			console.log('99999')
+        })
+
+
+      第二种：
+         var a=document.getElementById('a');
+
+        function bind(elem,eventName,functionName) {
+			if (elem.addEventListener){
+			    // 其他浏览器
+				elem.addEventListener(eventName,functionName)
+			}else {
+                //IE 浏览器
+                elem.attachEvent('on'+eventName,functionName)
+			}
+        }
+		bind(a,'click',function (event) {
+            event.preventDefault ? event.preventDefault():event.returnValue=false ; 
+			console.log('99999')
+        })
+        
+        
+        
+解决拖拽效果的兼容问题：
+    问题: 
+        * 在IE8浏览器中不能实现拖拽的效果；
+        * pageX和pageY参数无效；
+        * 目标元素不知被选中和释放
+    实现拖拽效果的流程 ： 
+        * 鼠标点击目标元素 - 被拖拽的对象 
+            * 鼠标点击事件 mousedown；
+        * 目标元素跟随鼠标移动
+            * 鼠标跟随事件 mousemove；
+        * 鼠标释放，目标元素停在相应的位置；
+            * 鼠标释放事件 mouseup
+    解决方案：
+    var flag=false ;  // 默认情况下mousedown未触发
+    var d1=document.getElementById('d1');
+    var x,y;
+// 定义一个封装函数
+    function bind(elem,eventName,functionName) { 
+        if (elem.addEventListener){
+            // 说明是其他浏览器
+            elem.addEventListener(eventName,functionName)
+        }else {
+            // 说明是IE 8 浏览器
+            elem.attachEvent('on'+eventName,functionName)
+        }
+    }
+    // 鼠标按下事件
+    bind(d1,'mousedown',function (event) {
+        var event= event ||window.event;
+        if (d1.setCapture){
+            d1.setCapture();
+        }    //  setCapture（）方法 - 使目标元素知道被选中，解决IE8的兼容问题
+            flag=true
+            x=event.offsetX;
+            y=event.offsetY;
+
+    });
+    //  鼠标移动事件
+    bind(d1,'mousemove',function(event){
+        var event= event ||window.event;
+        if (flag){
+            d1.style.top=event.clientY-y+'px';  //  设置样式时px-像素单位一定要写
+            d1.style.left=event.clientX-x+'px';
+        }
+
+    });
+    //  鼠标释放事件
+    bind(d1,'mouseup',function () {
+        if (d1.releaseCapture){
+            d1.releaseCapture()
+        }      // releaseCapture()  -  使目标元素知道被释放，解决IE8的兼容问题
+        flag=false;
+    })
+
+
+针对事件对象的兼容问题解决方案 - 总结下来一个套路 ： 相同的封装函数 + 不同的事件对象属性的判断       
