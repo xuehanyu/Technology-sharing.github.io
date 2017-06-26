@@ -1,0 +1,28 @@
+适配
+  * rem适配 - 解决页面在不同设备的等比显示
+    * rem参照根元素的字体大小
+    * （function（）{
+            var width=document.documentElement.clientWidth;
+	    var styleNode=document.createElement('style');
+	    style.innerHtml='html{font-size:'+width+'px;}'
+	    document.head.appendchild(styleNode);
+
+	}）（）
+  * viewport适配  - 解决ui给的设计图纸小于当前设备的独立像素值
+    * 动态改变initial-scale
+
+  * 1px适配 - 解决css样式不能识别小数的css像素值，
+    * 原理：dpr=物理像素/css像素  （如果要使物理像素为1，那么css像素应为1/dpr）
+	    dpr=window.devicPixelRatio；
+	    通过initial-scale 使元素进行缩放，scale=1/dpr
+	      * 在缩放的同时，改变了原来元素的长和宽，通过width*dpr 来动态的将元素的变为最初的值
+              * 原则，所有元素使用rem单位来设置，所有边框采用px来设置
+
+  * rem适配和viewport适配的优缺点
+    * rem适配
+      * 优点 ： 可以使用理想标签，可以实现等比缩放
+      * 缺点 ： 换算比较麻烦
+
+    * viewport适配
+      * 优点 ： 避免复杂的计算，直接使用UI的标准像素值
+      * 缺点 ： 不能使用理想视口，图片失真情况严重 
