@@ -1,0 +1,180 @@
+在pc端实现元素的拖拽效果（其中效果包括范围的限定，吸附效果，以及九宫格碰撞效果），具体代码如下：
+  方式一：利用的原理是元素随着鼠标移动的最终位置 可以由公式 ： 元素的初始位置+ 鼠标移动的差值获取；具体操作如下：
+  <!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='UTF-8'>
+	    <title>拖拽效果的实现</title>
+	    <style>
+	        *{
+	          margin:0px;
+	          padding:0px;
+	        }
+	        #box{
+	          position:absolute;
+	          top:0px;
+	          left:0px;
+	          width:100px;
+	          height:100px;
+	          background-color:yellow;        
+	        }
+	        #box1{
+	          position:absolute;
+	          top:250px;
+	          left:500px;
+	          width:200px;
+	          height:200px;
+	          background-color:red;        
+	        }
+	    </style>
+	</head>
+	<body>
+		<div id="box"></div>
+		<div id="box1"></div>
+	</body>
+    <script type="text/javascript">
+	    /*
+	      	实现拖拽id为box的元素，第二个div作为干扰项进行测试
+	    */
+	    //获取第一个div元素
+	    var box=document.getElementById('box');
+	    var box1=document.getElementById('box1');
+	    //定义一个变量用于存储元素的初始位置
+	    var elementPoint = {left:0,top:0};
+	    // 定义一个变量用于存储鼠标的初始位置
+	    var starPoint={left:0,top:0};
+	    // 为box绑定鼠标按下、鼠标移动以及鼠标抬起事件；
+	    box.onmousedown=function(event){
+	      	var event=event||window.event ;  // 做兼容处理
+	      		// 获取当前元素的初始位置
+	      	elementPoint.left=box.offsetLeft;
+	      	elementPoint.top=box.offsetTop;
+	      		// 获取当前鼠标的初始位置
+	      	starPoint.left=event.clientX;
+	      	starPoint.top=event.clientY;
+	      		// 利用全局捕获来阻止默认行为
+	     	box.setCapture&&box.setCapture();
+	      	/* 此时为document绑定移动事件，由于当快速移动元素时，浏览器的计算速度慢于鼠标的移动速度，当鼠标快速离开元素时，
+	        	元素不在跟着移动，当不脱离鼠标回到元素，其才跟着运动，为解决这个速度问题，可以为document绑定上事件，   
+	     	 */
+	      	document.onmousemove=function(event){
+	        	var event=event||window.event;
+	          // 获取移动结束后鼠标的位置
+	          	var nowPoint={left:0,top:0};
+	          	nowPoint.left=event.clientX;
+	          	nowPoint.top=event.clientY;
+	          // 计算鼠标移动的差值
+	          	var disX=nowPoint.left - starPoint.left;
+	          	var disY=nowPoint.top - starPoint.top;
+	          // 得到最终元素的位置
+	          	var L = elementPoint.left + disX;
+	          	var T = elementPoint.top + disY;
+	          	console.log(L,T);
+	          // 通过if语句判断，来实现当元素在四个边的距离小于50px时，出现吸附的效果
+	          	if(L<50){
+	            	L=0;
+	          	} else if(L>document.documentElement.clientWidth - box.offsetWidth - 50){
+	           	 	L=document.documentElement.clientWidth - box.offsetWidth;
+	          	}
+	          	if(T<50){
+	            	T=0
+	          	} else if(T>document.documentElement.clientHeight - box.offsetHeight-50){
+	            	T=document.documentElement.clientHeight - box.offsetHeight;
+	          	}
+	          	box.style.left =L+'px' ;
+	          	box.style.top =T+'px';
+
+	          	// 九宫格碰撞效果，利用的是getBoundingClientRect()；
+	          	// 分别定义box和box1的四个边基于原点的距离的变量为 t1、b1、r1、l1；t2、b2、r2、l2；
+	          
+	          	var t1=box.getBoundingClientRect().top;
+	          	var b1=box.getBoundingClientRect().bottom;
+	          	var r1=box.getBoundingClientRect().right;
+	          	var l1=box.getBoundingClientRect().left;
+	          
+	          	var t2=box1.getBoundingClientRect().top;
+	          	var b2=box1.getBoundingClientRect().bottom;
+	          	var r2=box1.getBoundingClientRect().right;
+	          	var l2=box1.getBoundingClientRect().left;
+	          	// 通过if语句进行边界的判断,如果碰到box1，则改变box1的背景颜色
+	          	if(b1<t2||t1>b2||r1<l2||r2<l1){
+	             	box1.style.background='red';
+	          	}else{
+	             	box1.style.background='blue';
+	          	}
+	        }
+	        document.onmouseup=function(){
+	            document.onmousemove = null;
+	            document.onmouseup = null;
+	            // 解除全局捕获
+	            document.releaseCapture&&document.releaseCapture();
+	        }
+	          // 阻止默认行为，浏览器默认的拖拽效果，存在兼容问题，IE8以下通过全局捕获来解决
+	         return false ;   
+	      	}
+	</script>
+</html>
+
+
+第二种方式 ： 
+		/*
+		 实现拖拽的第二种方式，利用的是拖拽元素的位置等于 鼠标相对于页面的距离-鼠标相对于图片的距离
+		 */
+    // 定义开关变量，默认为关；
+		var flag=false;
+		var d1=document.getElementById('d1');
+		var offsetX,offsetY;
+		
+		d1.onmousedown=function(event){
+			var event=event||window.event
+			flag=true;
+			// 获取当前鼠标点击相对于元素的位置
+			offsetX=event.offsetX;
+			offsetY=event.offsetY;
+			// 阻止系统的默认行为
+			if(d1.setCapture){
+				d1.setCapture()
+			}else{
+				return false
+			}
+		};
+
+		document.onmousemove=function(event){
+			var event=event||window.event;
+			if(flag){
+				d1.style.left=event.pageX-offsetX +'px';
+				d1.style.top=event.pageY-offsetY +'px';
+			}
+		};
+		document.onmouseup=function(){
+			flag=false;
+			document.releaseCapture&&document.releaseCapture();
+		}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
