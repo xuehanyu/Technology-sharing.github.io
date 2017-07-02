@@ -17,6 +17,7 @@
       * 该技术不可以应用在行内元素上
   * HTML5中的hidden属性（除IE）
     * hidden属性的效果和display：none的效果相同，不占用文档的位置
+    * 语法 <element hidden>  如<p hidden>这个段落应该被隐藏。</p>
   * {height：0；overflow：hidden}
     * 将元素垂直方向上收缩为0，使元素消失
     * 将元素隐藏后，元素原来的空间仍然存在
