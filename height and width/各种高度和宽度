@@ -1,0 +1,143 @@
+一、	关于client的分类
+1.	clientX和clientY
+  MouseEvent. clientX /clientY （pc端的鼠标事件）
+	只读属性，返回一个数值
+ 	表示鼠标相对于当前窗口的坐标值
+	由event调用
+代码示例（js部分） ： 
+<script>
+    var box =document.getElementById('box');
+    box.onmousedown=function (event) {
+        console.log(event.clientX,event.clientY);
+    }
+</script>
+显示效果如下：
+
+ 
+	Touch. clientX /clientY  （移动端）
+	触点相对于可见视区(visual viewport)左边沿的的X/Y坐标. 不包括任何滚动偏移.这个值会根据用户对可见视区的缩放行为而发生变化。
+代码示例（js部分）
+	var box =document.getElementById('box');
+box.addEventListener('touchstart',function (event) {
+    var touch = event.changedTouches[0];
+    console.log(touch.clientX,touch.clientY);
+})
+显示效果如下：
+ 
+2.	clientTop / clientLeft
+	一个元素边框的宽度（以像素表示） clientTop – 上边框的宽度，clientLeft — 左边框的宽度。
+	由元素调用 element.clientTop;
+	不包括顶部外边距或内边距。只读属性
+代码示例（css、js部分）
+css部分
+	border-top: 30px solid black;
+border-left: 20px solid black;
+js部分：
+	var box=document.getElementById('box');
+console.log(box.clientTop,box.clientLeft);
+显示效果如下：
+ 
+
+3.	clientWidth 和 clientHeight
+* 可见高度和宽度
+该属性表示元素的内部宽度，以像素计。该属性包括内边距，但不包括滚条（如果有的话）、边框和外边距。
+* 如果盒子模型为 content-box
+* clientHeight = height + padding-top + padding-bottom
+* clientWidth = width + padding-left + padding-right
+ * 如果盒子模型为 border-box
+* clientHeight = height - padding-top - padding-bottom
+* clientWidth = width - padding-left - padding-right
+* 注意 - 只读属性
+代码示例：
+css部分：
+#box{
+    box-sizing: border-box;
+    width: 200px;
+    height: 200px;
+    border: 10px;
+    margin: 10px;
+    padding: 10px;
+    background-color: yellow;
+    border: 10px solid black;
+}
+Js部分：
+var box=document.getElementById('box');
+console.log(box.clientWidth,box.clientHeight)  // 
+打印出的为180,180
+
+
+
+二、	关于offset-的分类
+1.offsetTop/offsetLeft
+	 它返回当前元素相对于其 offsetParent 元素的顶部和左边的距离。
+	只读属性 
+	自身开启定位，同时如果祖先元素开启定位，则相对于最近的祖先元素获取距离，如果祖先元素没有开启定位，则相对于初始包含块
+	自身不开启定位，如果祖先元素开启定位，则相对于最近的祖先元素获取距离，如果祖先元素没有开启定位，则相对于html获取。
+示例代码
+css部分：
+#wrap{
+    position: relative;
+    padding-top: 20px;
+    width: 400px;
+    height: 400px;
+    background-color: yellow;
+    margin: 10px auto;
+}
+#box{
+    margin-left: 30px;
+    width: 200px;
+    height: 200px;
+    background-color: red;
+}
+Js部分：
+var box=document.getElementById('box');
+console.log(box.offsetTop,box.offsetLeft)   
+输出的结果为20,30
+ 
+
+2.offsetWidth和offsetHeight
+	实际宽度和高度，
+	返回一个元素的布局宽度offsetWidth是测量元素的边框(border)、水平线上的内边距(padding)、竖直方向滚动条(scroolbar)（如果存在的话）、以及CSS设置的宽度(width)的值；
+	 是一个只读属性；
+	由element调用，element.clientWidth；
+ * 如果盒子模型为 content-box
+* offsetHeight = height + padding-top + padding-bottom + border-top + border-bottom
+* offsetWidth = width + padding-left + padding-right + border-left +border-right
+* 如果盒子模型为 border-box
+ * offsetHeight = height （设置的高度）
+* offsetWidth = width（设置的宽度）
+示例代码：
+css部分
+#wrap{
+    box-sizing: border-box;
+    width: 200px;
+    height: 200px;
+    border: 10px solid black;
+    padding: 10px;
+    margin: 10px;
+    background-color: yellow;
+}
+Js部分
+var wrap=document.getElementById('wrap');
+console.log(wrap.offsetWidth,wrap.offsetHeight)
+输出的结果是： 200px，200px
+
+4.	offsetX和offsetY
+	鼠标相对于当前元素的坐标值
+三、	获取鼠标坐标值
+1.	pageX和pageY
+	相对于当前页面的坐标值
+2.	screenX和screenY 
+	相对于当前屏幕的坐标值
+四、滚动条的高度和宽度
+     * 滚动高度和宽度属性
+       * scrollWidth - 获取指定标签滚动区的宽度
+       * scrollHeight- 获取指定标签滚动区的高度
+     * 滚动水平和垂直距离
+       * scrollLeft - 获取水平滚动条滚动的距离
+       * scrollTop - 获取垂直滚动条滚动的距离
+五、浏览器窗口的大小
+* var width=document.documentElement.clientWidth(不包括滚动条宽度)；
+* var width=window.innerWidth;(包括滚动条的宽度)
+* var width=window.outerWidth;(包括镶边的宽度)
+* var width=screen.width(屏幕的宽度)
