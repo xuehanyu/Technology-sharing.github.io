@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<select id="selProvince">
+  <option value="">--请选择省份--</option>
+</select>
+<select id="selCity">
+  <option value="">--请选择城市--</option>
+</select>
+<select id="selCounty">
+  <option value="">--请选择区/县--</option>
+</select>
+
+<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+  /*
+  *  分析：
+  *   1、页面加载的时候发送ajax请求所有省级单位的数据
+  *   2、当省级单位的select里边的option切换的时候发送ajax请求当前省对应的所有的市级单位的数据
+  *   3、当市级单位的select里边的option切换的时候发送ajax请求当前市对应的所有的区/县级单位的所有数据
+  *
+  *   接口文档：
+  *     一：请求省级单位的数据
+  *       1、请求的方式： GET
+  *       2、请求的url ： /getProvinces
+  *       3、请求的参数：无
+  *       4、请求返回的数据格式： json
+  *     二： 请求市级单位的数据
+  *       1、请求的方式： GET
+  *       2、请求的url： /getCities
+  *       3、请求的参数：provinceId
+  *       4、返回的数据格式： json
+  *     三： 请求区/县级单位的数据
+  *       1、请求的方式： GET
+  *       2、请求的url： /getCounties
+  *       3、请求的参数： cityId
+  *       4、请求返回的数据： json
+  *
+  *
+  * */
+
+  $(function () {
+    // 获取三个select标签
+    var $selProvince=$("#selProvince");
+    var $selCity=$("#selCity");
+    var $selCounty=$("#selCounty");
+    // 发送ajax请求所有升级单位的数据
+    $.get('/getProvinces',function (data) {
+      data.forEach(function (provinces,index) {
+        var province=provinces.province;
+        var optionHtml='<option value="'+provinces.id+'">'+province+'</option>'
+        $selProvince.append(optionHtml)
+      })
+    });
+    $selProvince.change(function () {
+      $selCity.children().not(':first').remove();
+      $selCounty.children().not(':first').remove();
+      //当省级信息发生改变时，发送ajax请求，获取市级单位
+      // 清空市级内的所有数据
+      var value=this.value;
+      if (value===''){
+        return
+      }
+      $.get('/getCities',{provinceId:value},function (data) {
+        data.forEach(function (city,index) {
+          var cityHtml='<option value="'+ city.id +'">'+ city.city+'</option>';
+          $selCity.append(cityHtml)
+        })
+      })
+    });
+    $selCity.change(function () {
+      $selCounty.children().not(':first').remove();
+      //当市级单位的信息发生改变时，发送ajax请求，获取区级信息
+      var value=this.value;
+      if(value===''){
+        return
+      }
+      $.get('/getCounties',{citiesId:value},function (data) {
+        data.forEach(function (country,index) {
+          var countiesHtml='<option value="'+index+'">'+country.county+'</option>';
+          $selCounty.append(countiesHtml);
+        })
+
+      })
+    })
+
+  })
+
+
+
+</script>
+</body>
+</html>
